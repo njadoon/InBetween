@@ -1,0 +1,182 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+
+public class InBetweenGui {
+    private JLabel lblFirstCard; private JLabel lblHiddenCard; private JLabel lblSecondCard; private JLabel lblMoney;
+    private JButton btnBet;   private JButton btnFold;  private JButton btnHigh;
+    private JButton btnRound; private JButton btnStart;
+    private JPanel pnlFull;   private JPanel pnlOpen;   private JPanel pnlGame;
+    private JTextField txtBet;                          private JButton btnLow;
+    private JLabel lblText;
+    private JButton btnReveal;
+
+    public InBetweenGui() {
+        pnlGame.setVisible(false);
+        btnStart.addActionListener(e -> {
+            pnlOpen.setVisible(false);
+            pnlGame.setVisible(true);
+            lblHiddenCard.setIcon(backCard());
+            lblFirstCard.setIcon(backCard());
+            lblSecondCard.setIcon(backCard());
+        });
+        final int[] money = {1000};
+        Random rand = new Random();
+
+        btnRound.addActionListener(e -> {
+            int firstCard = (rand.nextInt(13) + 1);
+            int secondCard = (rand.nextInt(13) + 1);
+            lblText.setVisible(true);       lblMoney.setText(String.valueOf(money[0]));
+            btnRound.setEnabled(false);
+            btnBet.setVisible(true);        btnFold.setVisible(true); btnHigh.setVisible(false); btnLow.setVisible(false);
+            txtBet.setEnabled(true);        txtBet.setVisible(true);
+            btnRound.setText("Next Round"); txtBet.setText("");
+            lblFirstCard.setIcon(frontCard(firstCard)); lblSecondCard.setIcon(frontCard(secondCard));
+            lblHiddenCard.setIcon(backCard());
+            int hiddenCard = (rand.nextInt(13) + 1);
+            btnBet.addActionListener(e14 -> {
+                try {
+                    int bet =Integer.parseInt(txtBet.getText());
+                    txtBet.setEnabled(false);
+                    btnBet.setVisible(false);
+                    btnFold.setVisible(false);
+                    btnReveal.setVisible(true);
+                    if (bet > money[0]) {
+                        JOptionPane.showMessageDialog(null,"You can't bet more than what you have.");
+                    } else {
+                        if (firstCard != secondCard) {
+                            lblHiddenCard.setIcon(frontCard(hiddenCard));
+                            if (hiddenCard > firstCard && hiddenCard < secondCard ||
+                                    hiddenCard < firstCard && hiddenCard > secondCard) {
+                                money[0] += bet;
+                            } else {
+                                money[0] -= bet;
+                            }
+                            lblMoney.setText(String.valueOf(money[0]));
+                            btnRound.setEnabled(true);
+                        } else {
+                            btnHigh.setVisible(true);
+                            btnLow.setVisible(true);
+                        }
+                    }
+                } catch (NumberFormatException e2) {
+                    JOptionPane.showMessageDialog(null, " Input a valid number.");
+                    lblHiddenCard.setIcon(backCard());
+                }
+            });
+            btnHigh.addActionListener(e141 -> {
+                int bet = Integer.parseInt(txtBet.getText());
+                btnHigh.setVisible(false);
+                btnLow.setVisible(false);
+                btnRound.setEnabled(true);
+                lblHiddenCard.setIcon(frontCard(hiddenCard));
+                if (hiddenCard > firstCard) {
+                    money[0] += bet;
+                } else {
+                    money[0] -= bet;
+                }
+                if (money[0] < 1){
+                    JOptionPane.showMessageDialog(null, "Bankrupt!!! Good Game.");
+                    btnRound.setEnabled(false);
+                    pnlFull.setVisible(false);
+                } else {
+                    lblMoney.setText(String.valueOf(money[0]));
+                }
+            });
+            btnLow.addActionListener(e13 -> {
+                int bet = Integer.parseInt(txtBet.getText());
+
+                btnHigh.setVisible(false);
+                btnLow.setVisible(false);
+                btnRound.setEnabled(true);
+                lblHiddenCard.setIcon(frontCard(hiddenCard));
+                if (hiddenCard < firstCard) {
+                    money[0] += bet;
+                } else {
+                    money[0] -= bet;
+                    if (money[0] < 1){
+                        JOptionPane.showMessageDialog(null, "Bankrupt!!! Good Game.");
+                        btnRound.setEnabled(false);
+                    }
+                    lblMoney.setText(String.valueOf(money[0]));
+                }
+            });
+            btnFold.addActionListener(e1 -> {
+                btnRound.setEnabled(true);
+                btnFold.setVisible(false);
+                btnBet.setVisible(false);
+                btnHigh.setVisible(false);
+                btnLow.setVisible(false);
+                txtBet.setVisible(false);
+                lblMoney.setText(String.valueOf(money[0]));
+            });
+            btnReveal.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+        });
+
+
+    }
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("In Between Card Game");
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);   // Exit the program after closing
+        frame.setSize(new Dimension(700, 520));
+        frame.setLocation(new Point(500, 50));// Setting the frame to a specific location
+        frame.setContentPane(new InBetweenGui().pnlFull);
+        frame.setResizable(false);
+        frame.setVisible(true);
+
+    }
+    public static ImageIcon backCard(){
+        return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\Back.png")
+                .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+    }
+    public static  ImageIcon frontCard(int n){
+        if (n == 1){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\one.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 2){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\two.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 3){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\three.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 4){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\four.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        }  else if (n == 5){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\five.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 6){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\six.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 7){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\seven.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 8){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\eight.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 9){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\nine.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 10){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\ten.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 11){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\eleven.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else if (n == 12){
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\twelve.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        } else {
+            return new ImageIcon(new ImageIcon("C:\\Users\\jadoo\\Desktop\\UE\\JavaGUI\\thirteen.png")
+                    .getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH));
+        }
+    }
+}
+
